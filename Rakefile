@@ -38,6 +38,7 @@ def specs_for_quick_build
     "login_spec.rb", 
     "permission_check_spec.rb",
     "review_spec.rb",
+    "api_spec.rb"
     "not_exists_spec.rb" # test hanlding non exists scenario
   ]
 end

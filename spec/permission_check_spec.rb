@@ -25,16 +25,20 @@ describe "User Permission Check" do
     course_list_page = CourseListPage.new(driver)
 
     try_for(2) { course_list_page.click_course("CSSE1001") }
-    try_for(4) { driver.find_element(:id, "add-new-review-btn").click }
     
     course_page = CoursePage.new(driver)
-    course_page.enter_comments("don't care")
-    course_page.click_submit
+    course_page.delete_all_reviews
+    try_for(4) {  course_page.click_add_review }
+    
+    review_modal_page = ReviewModalPage.new(driver)
+    review_modal_page.enter_comments("don't care")
+    review_modal_page.click_submit
     logout
 
     click_nav_view_all_courses
     course_list_page = CourseListPage.new(driver)
     course_list_page.click_course("CSSE1001")
+    
     expect(page_text).to include("You must be logged in to write a review for this course.")
   end
 end

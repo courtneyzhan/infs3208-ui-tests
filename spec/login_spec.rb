@@ -13,7 +13,7 @@ describe "User Authentication" do
   after(:all) do
     driver.quit unless debugging?
   end
-  
+
   before(:each) do
     driver.find_element(:id, "navbar-login").click
   end
@@ -23,8 +23,9 @@ describe "User Authentication" do
     login("Courtney", "test01")
     sleep 0.5
     #try_for(2) { expect(page_text).to include("Welcome, courtney. You are now signed in.") }
-    shall_not_allow {  driver.find_element(:id, "navbar-login") } # TODO after login, the top 'Login' button
-    shall_not_allow {  driver.find_element(:id, "user-id") }      # TODO after login, shall redirect
+    expect(driver.find_element(:id, "navbar-login").displayed?).to eq(false)
+    # TODO after login, the top 'Login' button
+    shall_not_allow { driver.find_element(:id, "user-id") }      # TODO after login, shall redirect
     driver.find_element(:id, "navbar-logout").click
   end
 

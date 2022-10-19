@@ -11,7 +11,6 @@ describe "DEBUG" do
   end
 
   it "Debugging" do
-    course_page = CoursePage.new(driver)
-    course_page.click_submit
+      expect(driver.find_element(:id, "navbar-login").displayed?).to eq(false)
   end
 end

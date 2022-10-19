@@ -23,14 +23,16 @@ describe "Review" do
   it "Add user review" do
     course_list_page = CourseListPage.new(driver)
     try_for(2) { course_list_page.click_course("COMP3506") }
+    
+    course_page = CoursePage.new(driver)    
+    course_page.delete_all_reviews
+    try_for(4) { course_page.click_add_review }
 
-    try_for(4) { driver.find_element(:id, "add-new-review-btn").click }
-    sleep 0.5
-    course_page = CoursePage.new(driver)
-    course_page.select_rating(5)
-    course_page.enter_comments("good course")
-    course_page.click_submit
- 
+    review_modal_page = ReviewModalPage.new(driver)
+    review_modal_page.select_rating(5)
+    review_modal_page.enter_comments("good course")
+    review_modal_page.click_submit
+
     try_for(5) { expect(page_text).to include("good course") }
   end
 
@@ -39,33 +41,27 @@ describe "Review" do
     try_for(2) { course_list_page.click_course("CSSE1001") }
 
     course_page = CoursePage.new(driver)
-    course_url = driver.current_url
-
-    # delete tnhis course's all reviews first
-    delete_count = driver.find_elements(:link_text, "Delete").count
-    delete_count.times do
-      driver.find_element(:link_text, "Delete").click
-      sleep 0.5
-      driver.get(course_url)
-      sleep 0.5
-    end
-
-    driver.find_element(:id, "add-new-review-btn").click
-    sleep 0.5
-
-    course_page.select_rating(5)
-    course_page.enter_comments("1st for 1001")
-    course_page.click_submit
+    course_page.delete_all_reviews
+    try_for(4) { course_page.click_add_review }    
+    
+    review_modal_page = ReviewModalPage.new(driver)
+    review_modal_page.select_rating(5)
+    review_modal_page.enter_comments("1st for 1001")
+    review_modal_page.click_submit
     sleep 1 # Could happen: immediately resubmitting the form, courseid not passed to server
 
-    driver.find_element(:id, "add-new-review-btn").click
+    course_page.click_add_review
     sleep 0.5
-
+    course_url = driver.current_url
+    
+    review_modal_page = ReviewModalPage.new(driver)
+    review_modal_page.select_rating(4)
+    review_modal_page.enter_comments("2nd for 1001")
+    review_modal_page.click_submit
+    expect(review_modal_page.modal_text).to include("You have already written a review for this course.")
+    
+    driver.get(course_url)
     course_page = CoursePage.new(driver)
-    course_page.select_rating(4)
-    course_page.enter_comments("2nd for 1001")
-    course_page.click_submit
-
     expect(page_text).not_to include("2nd for 1001")
   end
 end
