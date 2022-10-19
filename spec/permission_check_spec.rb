@@ -1,6 +1,6 @@
 load File.dirname(__FILE__) + "/../test_helper.rb"
 
-describe "User Authentication" do
+describe "User Permission Check" do
   include TestHelper
 
   before(:all) do
