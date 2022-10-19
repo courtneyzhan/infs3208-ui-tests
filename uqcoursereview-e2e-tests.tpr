@@ -5,8 +5,14 @@
     <test_framework>Selenium</test_framework>
     <syntax_framework>RSpec</syntax_framework>
     <environments>
-        <entry name="Test" default="false">
+        <entry name="development" default="false">
             <base_url>http://localhost</base_url>
+        </entry>
+        <entry name="test" default="true">
+            <base_url>http://localhost</base_url>
+        </entry>
+        <entry name="Production" default="false">
+            <base_url>http://35.244.125.193</base_url>
         </entry>
     </environments>
     <exclude_dirs></exclude_dirs>

@@ -21,6 +21,7 @@ describe "User Authentication" do
   it "Login ok" do
     expect(page_text).not_to include("Username or password is invalid")
     login("Courtney", "test01")
+    sleep 0.5
     #try_for(2) { expect(page_text).to include("Welcome, courtney. You are now signed in.") }
     shall_not_allow {  driver.find_element(:id, "navbar-login") } # TODO after login, the top 'Login' button
     shall_not_allow {  driver.find_element(:id, "user-id") }      # TODO after login, shall redirect
