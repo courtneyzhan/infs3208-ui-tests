@@ -191,6 +191,7 @@ module TestHelper
 
 
   def click_nav_view_all_courses
+    sleep 0.5
     driver.find_element(:link_text, "View all courses").click
     sleep 0.5
   end

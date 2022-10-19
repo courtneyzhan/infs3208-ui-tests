@@ -23,9 +23,9 @@ describe "User Permission Check" do
 
     click_nav_view_all_courses
     course_list_page = CourseListPage.new(driver)
-    sleep 2
-    course_list_page.click_course("COMP3506")
-    driver.find_element(:id, "add-new-review-btn").click
+
+    try_for(2) { course_list_page.click_course("COMP3506") }
+    try_for(4) { driver.find_element(:id, "add-new-review-btn").click }
     
     course_page = CoursePage.new(driver)
     course_page.enter_comments("don't care")
