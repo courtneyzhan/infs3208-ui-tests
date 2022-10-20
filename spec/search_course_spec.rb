@@ -8,7 +8,6 @@ describe "Search course" do
     @driver = $driver = Selenium::WebDriver.for(browser_type, browser_options)
     driver.manage().window().resize_to(1280, 720)
     driver.get(site_url)
-
   end
 
   after(:all) do
@@ -18,21 +17,28 @@ describe "Search course" do
   before(:each) do
   end
 
+  def search_course(course_search)
+    driver.find_element(:id, "courseSearch").send_keys(course_search)
+    driver.find_element(:id, "courseSearch").send_keys(:enter)
+    sleep 0.5
+  end
+
   it "Search course by code on home page" do
     # DESIGN
-    # 1. enter a valid course code (in the top search box), such as COMP2048
-    # 2. press the Enter key (on the search box elemement)
-    # 3. verify the course name "Theory of Computing"
-    
-    # 4. Login
+    search_course("COMP2048")
+    sleep 1
+    expect(page_text).to include("Theory of Computing")
+
     driver.find_element(:id, "navbar-login").click
     login("Courtney", "test01")
-    
-    # 5. perform the same search with lower case
-    # 6. verify
-    # 7. Go back the home "/"
-    # 8. Search an course does not exist
-    # 9. Verify the "No course found"
-    
+
+    search_course("comp2048")
+    sleep 1
+    expect(page_text).to include("Theory of Computing")
+
+    visit("/")
+    search_course("ius2048")
+    sleep 1
+    expect(page_text).to include("No course found")
   end
 end

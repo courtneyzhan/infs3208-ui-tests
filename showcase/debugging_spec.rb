@@ -12,6 +12,7 @@ describe "DEBUG" do
 
   it "Debugging" do
     review_modal_page = ReviewModalPage.new(driver)
-    review_modal_page.select_rating(5)
+    elem = driver.find_element(:id, "review-rating")
+    elem.clear
   end
 end

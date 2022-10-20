@@ -1,8 +1,8 @@
 # require 'rubygems'
 gem "selenium-webdriver"
-require 'selenium-webdriver'
-require 'rspec'
-require 'faker'
+require "selenium-webdriver"
+require "rspec"
+require "faker"
 
 # include utility functions such as 'page_text', 'try_for', 'fail_safe', ..., etc.
 require "#{File.dirname(__FILE__)}/agileway_utils.rb"
@@ -17,27 +17,27 @@ $BASE_URL = "http://localhost"
 # This is the helper for your tests, every test file will include all the operation
 # defined here.
 module TestHelper
-
   include AgilewayUtils
-  if defined?(TestWiseRuntimeSupport)  # TestWise 5+
-    include TestWiseRuntimeSupport 
+  if defined?(TestWiseRuntimeSupport) # TestWise 5+
+    include TestWiseRuntimeSupport
   end
 
   def browser_type
-    if $TESTWISE_BROWSER then
+    if $TESTWISE_BROWSER
       $TESTWISE_BROWSER.downcase.to_sym
     elsif ENV["BROWSER"]
-      ENV["BROWSER"].downcase.to_sym      
+      ENV["BROWSER"].downcase.to_sym
     else
       :chrome
     end
   end
+
   alias the_browser browser_type
 
   def site_url(default = $BASE_URL)
     $TESTWISE_PROJECT_BASE_URL || ENV["BASE_URL"] || default
   end
-	
+
   def browser_options
     the_browser_type = browser_type.to_s
 
@@ -46,12 +46,12 @@ module TestHelper
       # make the same behaviour as Python/JS
       # leave browser open until calls 'driver.quit'
       the_chrome_options.add_option("detach", true)
-      
+
       # if Selenium unable to detect Chrome browser in default location
       if ENV["ALTERNATIVE_CHROME_PATH"]
         the_chrome_options.binary = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
       end
-          
+
       if $TESTWISE_BROWSER_HEADLESS || ENV["BROWSER_HEADLESS"] == "true"
         the_chrome_options.add_argument("--headless")
       end
@@ -66,18 +66,17 @@ module TestHelper
 
       if Selenium::WebDriver::VERSION =~ /^3/
         if defined?(TestwiseListener)
-          return :options => the_chrome_options, :listener => TestwiseListener.new      
-        else 
-          return :options => the_chrome_options      
+          return :options => the_chrome_options, :listener => TestwiseListener.new
+        else
+          return :options => the_chrome_options
         end
-      else       
+      else
         if defined?(TestwiseListener)
-          return :capabilities => the_chrome_options, :listener => TestwiseListener.new      
-        else 
-          return :capabilities => the_chrome_options      
+          return :capabilities => the_chrome_options, :listener => TestwiseListener.new
+        else
+          return :capabilities => the_chrome_options
         end
       end
-      
     elsif the_browser_type == "firefox"
       the_firefox_options = Selenium::WebDriver::Firefox::Options.new
       the_firefox_options = Selenium::WebDriver::Firefox::Options.new
@@ -85,11 +84,10 @@ module TestHelper
         the_firefox_options.headless!
         # the_firefox_options.add_argument("--headless") # this works too
       end
-      
-      # the_firefox_options.add_argument("--detach") # does not work
-      
-      return :options => the_firefox_options
 
+      # the_firefox_options.add_argument("--detach") # does not work
+
+      return :options => the_firefox_options
     elsif the_browser_type == "ie"
       the_ie_options = Selenium::WebDriver::IE::Options.new
       if $TESTWISE_BROWSER_HEADLESS || ENV["BROWSER_HEADLESS"] == "true"
@@ -97,11 +95,10 @@ module TestHelper
         # the_ie_options.add_argument('--headless')
       end
       return :options => the_ie_options
-
     elsif the_browser_type == "edge"
       the_edge_options = Selenium::WebDriver::Edge::Options.new
       the_edge_options.add_option("detach", true)
-      
+
       if $TESTWISE_BROWSER_HEADLESS || ENV["BROWSER_HEADLESS"] == "true"
         the_edge_options.add_argument("--headless")
       end
@@ -113,83 +110,78 @@ module TestHelper
       else
         # puts("Chrome debugging port not enabled.")
       end
-      
-      return  {  :capabilities =>  the_edge_options }
-      
+
+      return { :capabilities => the_edge_options }
     else
       return {}
     end
   end
-	
+
   def driver
     @driver
   end
-  
+
   def browser
     @driver
   end
-  
-  
+
   # got to path based on current base url
   def visit(path)
     driver.navigate.to(site_url + path)
   end
-  
+
   def page_text
     driver.find_element(:tag_name => "body").text
   end
-  
+
   def debugging?
     return ENV["RUN_IN_TESTWISE"].to_s == "true" && ENV["TESTWISE_RUNNING_AS"] == "test_case"
   end
-  
-  ## 
+
+  ##
   #  Highlight a web control on a web page,currently only support 'background_color'
   #  - elem,
-  #  - options, a hashmap, 
+  #  - options, a hashmap,
   #      :background_color
-  #      :duration,  in seconds 
-  #  
+  #      :duration,  in seconds
+  #
   #  Example:
   #   highlight_control(driver.find_element(:id, "username"), {:background_color => '#02FE90', :duration => 5})
-  def highlight_control(element, opts={})
+  def highlight_control(element, opts = {})
     return if element.nil?
-    background_color = opts[:background_color] ? opts[:background_color] : '#FFFF99'
+    background_color = opts[:background_color] ? opts[:background_color] : "#FFFF99"
     duration = (opts[:duration].to_i * 1000) rescue 2000
     duration = 2000 if duration < 100 || duration > 60000
-    driver.execute_script("h = arguments[0]; h.style.backgroundColor='#{background_color}'; window.setTimeout(function () { h.style.backgroundColor = ''}, #{duration})", element)  
+    driver.execute_script("h = arguments[0]; h.style.backgroundColor='#{background_color}'; window.setTimeout(function () { h.style.backgroundColor = ''}, #{duration})", element)
   end
-  
-  # prevent extra long string generated test scripts that blocks execution when running in 
+
+  # prevent extra long string generated test scripts that blocks execution when running in
   # TestWise or BuildWise Agent
   def safe_print(str)
     return if str.nil? || str.empty?
     if (str.size < 250)
       puts(str)
-      return;
+      return
     end
-    
+
     if ENV["RUN_IN_TESTWISE"].to_s == "true" && ENV["RUN_IN_BUILDWISE_AGENT"].to_s == "true"
       puts(str[0..200])
     end
   end
-  
-  
+
   ## user defined functions
   #
 
-
-
-
   def login(userid, password)
-    driver.find_element(:id, "user-id").clear
-    driver.find_element(:id, "user-id").send_keys(userid)
-    driver.find_element(:id, "password").clear
-    driver.find_element(:id, "password").send_keys(password)
+    elem = driver.find_element(:id, "user-id")
+    elem.clear
+    elem.send_keys(userid)
+    elem = driver.find_element(:id, "password")
+    elem.clear
+    elem.send_keys(password)
     driver.find_element(:id, "login-btn").click
     sleep 0.5
   end
-
 
   def click_nav_view_all_courses
     sleep 0.5
@@ -197,15 +189,8 @@ module TestHelper
     sleep 0.5
   end
 
-
   def logout
     driver.find_element(:id, "navbar-logout").click
     sleep 0.2
   end
 end
-
-
-
-
-
-

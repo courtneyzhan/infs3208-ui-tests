@@ -8,8 +8,6 @@ describe "Sign up" do
     @driver = $driver = Selenium::WebDriver.for(browser_type, browser_options)
     driver.manage().window().resize_to(1280, 720)
     driver.get(site_url)
-    driver.find_element(:id, "navbar-login").click
-
   end
 
   after(:all) do
@@ -21,9 +19,19 @@ describe "Sign up" do
 
   it "Use can sign up" do
     # Choose a random user name
+    driver.find_element(:id, "navbar-signup").click
+
     new_user_name = "test" + Faker::Number.number(digits: 6).to_s
-    puts new_user_name
-    # sign up 
-    # then login 
+
+    sign_up_page = SignUpPage.new(driver)
+    sign_up_page.enter_username(new_user_name)
+    sign_up_page.enter_password("test01")
+    sign_up_page.enter_password_confirmation("test01")
+    sign_up_page.click_sign_up_button
+    
+    sleep 1
+    login(new_user_name, "test01")
+    sleep 1
+    expect(page_text).to include(new_user_name)
   end
 end

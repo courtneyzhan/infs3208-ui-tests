@@ -20,4 +20,15 @@ class CoursePage < AbstractPage
       sleep 0.5
     end
   end
+  def click_edit
+    driver.find_element(:xpath, "//button[text()='Edit']").click
+  end
+
+
+  def click_delete
+    driver.find_element(:xpath, "//button[text()='Delete']").click
+    sleep 1
+  end
 end
+
+

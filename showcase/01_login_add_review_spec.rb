@@ -34,7 +34,7 @@ describe "Show Case " do
     try_for(4) { course_page.click_add_review }
 
     review_modal_page = ReviewModalPage.new(driver)
-    review_modal_page.select_rating(5)
+    review_modal_page.select_rating(4)
     review_modal_page.enter_comments("good course")
     review_modal_page.click_submit
 
@@ -47,8 +47,8 @@ describe "Show Case " do
     review_modal_page.click_submit
     sleep 2 # say I about to delete it
     
-    driver.find_element(:xpath, "//button[text()='Delete']").click
-    sleep 1
+    course_page = CoursePage.new(driver)
+    course_page.click_delete
   end
 
  

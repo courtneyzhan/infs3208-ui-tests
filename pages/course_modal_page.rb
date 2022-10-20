@@ -12,11 +12,29 @@ class ReviewModalPage < AbstractPage
   def select_rating(the_rating)
     sleep 0.1
     elem = driver.find_element(:id, "review-rating")
-    (the_rating - 3).times do
-      puts("Move right ...")
+=begin # too slow    
+    5.times { elem.send_keys(:left) }
+    (the_rating - 1).times do
       driver.find_element(:id, "review-rating").send_keys(:right)
       sleep 0.2
     end
+=end
+
+    elem.clear # reset to 3
+    if the_rating >= 3
+      (the_rating - 3).times do
+        puts("Move right ...")
+        driver.find_element(:id, "review-rating").send_keys(:right)
+        sleep 0.2
+      end
+    else
+      (3 - the_rating).times do
+        puts("Move left ...")
+        driver.find_element(:id, "review-rating").send_keys(:left)
+        sleep 0.2
+      end
+    end
+
   end
 
   def enter_comments(reviewcomments)
@@ -32,5 +50,13 @@ class ReviewModalPage < AbstractPage
 
   def modal_text
     driver.find_element(:id, "modal-review").text
+  end
+
+  def current_rating
+    driver.find_element(:id, "review-rating")["value"]
+  end
+
+  def current_comments
+    driver.find_element(:id, "review-comments")["value"]
   end
 end

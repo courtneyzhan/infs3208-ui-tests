@@ -11,6 +11,6 @@ describe "DEBUG" do
   end
 
   it "Debugging" do
-      expect(driver.find_element(:id, "navbar-login").displayed?).to eq(false)
+  puts driver.find_element(:id, "overall-rating")["data-score"]
   end
 end

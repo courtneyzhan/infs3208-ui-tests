@@ -22,19 +22,21 @@ describe "Review" do
 
   it "Delete an review" do
     course_list_page = CourseListPage.new(driver)
-    try_for(2) { course_list_page.click_course("XXXXX ") }
+    try_for(2) { course_list_page.click_course("CYBR3000") }
     
     course_page = CoursePage.new(driver)    
     course_page.delete_all_reviews
     try_for(4) { course_page.click_add_review }
 
     review_modal_page = ReviewModalPage.new(driver)
-    review_modal_page.select_rating(5)
+    review_modal_page.select_rating(1)
     review_modal_page.enter_comments("Will be deleted soon")
     review_modal_page.click_submit
     
-    # TODO delete it
-
+    sleep 1
+    #TODO refactor to page
+    course_page.click_delete
+    expect(driver.find_element(:id, "num-reviews").text).to eq("(0)")
   end
 
 end

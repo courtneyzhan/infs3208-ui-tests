@@ -37,7 +37,7 @@ describe "User Permission Check" do
 
     click_nav_view_all_courses
     course_list_page = CourseListPage.new(driver)
-    course_list_page.click_course("CSSE1001")
+    try_for(3) { course_list_page.click_course("CSSE1001") }
     
     expect(page_text).to include("You must be logged in to write a review for this course.")
   end
