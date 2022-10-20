@@ -8,21 +8,23 @@ describe "Edit Review" do
     @driver = $driver = Selenium::WebDriver.for(browser_type, browser_options)
     driver.manage().window().resize_to(1280, 720)
     driver.get(site_url)
-        driver.find_element(:id, "navbar-login").click
+    driver.find_element(:id, "navbar-login").click
     login("Courtney", "test01")
-
   end
 
   after(:all) do
     driver.quit unless debugging?
   end
-  
+
   before(:each) do
   end
 
   it "Register user can update an review " do
-   
+    # find one course (better the bottom one)
+    # add one review
+    # then edit it
+    # verify the rating and comments is still there (pre-populated for editing)
+    # change rating
+    # change comments
   end
-  
-  
 end

@@ -1,24 +1,24 @@
 # You need Ruby (Rake, RWebSpec, ci_reporter gems installed)
 #   Simplest way on Windows is to install RubyShell (http://agileway.com.au/downloads)
 
-require 'rubygems'
-gem 'ci_reporter'
-gem 'rspec'
-require 'rspec/core/rake_task'
-require 'ci/reporter/rake/rspec' # use this if you're using RSpec
+require "rubygems"
+gem "ci_reporter"
+gem "rspec"
+require "rspec/core/rake_task"
+require "ci/reporter/rake/rspec" # use this if you're using RSpec
 
 load File.join(File.dirname(__FILE__), "buildwise.rake")
 
 ## Settings: Customize here...
-# 
+#
 BUILDWISE_URL = ENV["BUILDWISE_MASTER"] || "http://buildwise.dev"
 # BUILDWISE_QUICK_PROJECT_ID = "agiletravel-quick-build-rspec"
 # BUILDWISE_FULL_PROJECT_ID  = "agiletravel-full-build-rspec" # import to set for full build
- 
-FULL_BUILD_MAX_TIME = ENV["DISTRIBUTED_MAX_BUILD_TIME"].to_i || 60 * 60   # max build time, over this, time out
-FULL_BUILD_CHECK_INTERVAL =  ENV["DISTRIBUTED_BUILD_CHECK_INTERVAL"].to_i || 20  # check interval for build complete
 
-$test_dir =  File.expand_path( File.join( File.dirname(__FILE__), "spec" ) )  # change to aboslution path if invocation is not this directory
+FULL_BUILD_MAX_TIME = ENV["DISTRIBUTED_MAX_BUILD_TIME"].to_i || 60 * 60   # max build time, over this, time out
+FULL_BUILD_CHECK_INTERVAL = ENV["DISTRIBUTED_BUILD_CHECK_INTERVAL"].to_i || 20  # check interval for build complete
+
+$test_dir = File.expand_path(File.join(File.dirname(__FILE__), "spec"))  # change to aboslution path if invocation is not this directory
 # rspec will create 'spec/reports' under check out dir
 
 # List tests you want to exclude
@@ -35,29 +35,30 @@ end
 def specs_for_quick_build
   # list test files to be run in a quick build, leave the caller to set full path
   [
-    "login_spec.rb", 
+    "api_spec.rb",
+    "login_spec.rb",
+    "review_delete_spec.rb",
+    "review_edit_spec.rb",
+    "review_add_spec.rb",
+    "search_course_spec.rb",
+    "sign_up_spec.rb",
     "permission_check_spec.rb",
-    "review_spec.rb",
-    "api_spec.rb"
-    "not_exists_spec.rb" # test hanlding non exists scenario
+    "not_exists_spec.rb", # test hanlding non exists scenario
   ]
 end
 
-
 desc "run tests in this spec/ folder, option to use INTELLIGENT_ORDERING or/and DYNAMIC_FEEDBACK"
 RSpec::Core::RakeTask.new("ui_tests:quick") do |t|
-  specs_to_be_executed = buildwise_determine_specs_for_quick_build(specs_for_quick_build, excluded_spec_files, $test_dir);
-  buildwise_formatter =  File.join(File.dirname(__FILE__), "buildwise_rspec_formatter.rb")
-  t.rspec_opts = "--pattern my_own_custom_order --require #{buildwise_formatter} #{specs_to_be_executed.join(' ')} --order defined"
+  specs_to_be_executed = buildwise_determine_specs_for_quick_build(specs_for_quick_build, excluded_spec_files, $test_dir)
+  buildwise_formatter = File.join(File.dirname(__FILE__), "buildwise_rspec_formatter.rb")
+  t.rspec_opts = "--pattern my_own_custom_order --require #{buildwise_formatter} #{specs_to_be_executed.join(" ")} --order defined"
 end
-
 
 desc "run quick tests from BuildWise"
 task "ci:ui_tests:quick" => ["ci:setup:rspec"] do
   build_id = buildwise_start_build(:working_dir => File.expand_path(File.dirname(__FILE__)))
   buildwise_run_sequential_build_target(build_id, "ui_tests:quick")
 end
-
 
 ## Full Build
 #
@@ -66,11 +67,9 @@ task "ci:ui_tests:full" => ["ci:setup:rspec"] do
   build_id = buildwise_start_build(:working_dir => File.expand_path(File.dirname(__FILE__)),
                                    :ui_test_dir => ["spec"],
                                    :excluded => excluded_spec_files || [],
-                                   :distributed => true
-  )
-  buildwise_montior_parallel_execution(build_id, :max_wait_time => FULL_BUILD_MAX_TIME, :check_interval => FULL_BUILD_CHECK_INTERVAL)  
+                                   :distributed => true)
+  buildwise_montior_parallel_execution(build_id, :max_wait_time => FULL_BUILD_MAX_TIME, :check_interval => FULL_BUILD_CHECK_INTERVAL)
 end
-
 
 desc "run all tests in this folder"
 RSpec::Core::RakeTask.new("go") do |t|
@@ -79,20 +78,18 @@ RSpec::Core::RakeTask.new("go") do |t|
   t.rspec_opts = "" # to enable warning: "-w"
 end
 
-
 desc "Generate stats for UI tests"
 task "test:stats" do
-
   ui_test_dir = File.dirname(__FILE__)
   STATS_SOURCES = {
-      "Tests" => "#{ui_test_dir}/spec",
-      "Pages" => "#{ui_test_dir}/pages",
-      "Helpers" => "#{ui_test_dir}/*_helper.rb",
+    "Tests" => "#{ui_test_dir}/spec",
+    "Pages" => "#{ui_test_dir}/pages",
+    "Helpers" => "#{ui_test_dir}/*_helper.rb",
   }
 
-  test_stats = {"lines" => 0, "test_suites" => 0, "test_cases" => 0, "test_lines" => 0}
-  page_stats = {"lines" => 0, "classes" => 0, "methods" => 0, "code_lines" => 0}
-  helper_stats ={"lines" => 0, "helpers" => 0, "methods" => 0, "code_lines" => 0}
+  test_stats = { "lines" => 0, "test_suites" => 0, "test_cases" => 0, "test_lines" => 0 }
+  page_stats = { "lines" => 0, "classes" => 0, "methods" => 0, "code_lines" => 0 }
+  helper_stats = { "lines" => 0, "helpers" => 0, "methods" => 0, "code_lines" => 0 }
 
   # Tests
   directory = STATS_SOURCES["Tests"]
@@ -145,15 +142,14 @@ task "test:stats" do
 
   puts "+------------+---------+---------+---------+--------+"
   puts "| TEST       |   LINES |  SUITES |   CASES |    LOC |"
-  puts "|            | #{test_stats['lines'].to_s.rjust(7)} " + "| #{test_stats['test_suites'].to_s.rjust(7)} " + "| #{test_stats['test_cases'].to_s.rjust(7)} " + "| #{test_stats['test_lines'].to_s.rjust(6)} " + "|"
+  puts "|            | #{test_stats["lines"].to_s.rjust(7)} " + "| #{test_stats["test_suites"].to_s.rjust(7)} " + "| #{test_stats["test_cases"].to_s.rjust(7)} " + "| #{test_stats["test_lines"].to_s.rjust(6)} " + "|"
   puts "+------------+---------+---------+---------+--------+"
   puts "| PAGE       |   LINES | CLASSES | METHODS |    LOC |"
-  puts "|            | #{page_stats['lines'].to_s.rjust(7)} " + "| #{page_stats['classes'].to_s.rjust(7)} " + "| #{page_stats['methods'].to_s.rjust(7)} " + "| #{page_stats['code_lines'].to_s.rjust(6)} " + "|"
+  puts "|            | #{page_stats["lines"].to_s.rjust(7)} " + "| #{page_stats["classes"].to_s.rjust(7)} " + "| #{page_stats["methods"].to_s.rjust(7)} " + "| #{page_stats["code_lines"].to_s.rjust(6)} " + "|"
   puts "+------------+---------+---------+---------+--------+"
   puts "| HELPER     |   LINES |   COUNT | METHODS |    LOC |"
-  puts "|            | #{helper_stats['lines'].to_s.rjust(7)} " + "| #{helper_stats['helpers'].to_s.rjust(7)} " + "| #{helper_stats['methods'].to_s.rjust(7)} " + "| #{helper_stats['code_lines'].to_s.rjust(6)} " + "|"
+  puts "|            | #{helper_stats["lines"].to_s.rjust(7)} " + "| #{helper_stats["helpers"].to_s.rjust(7)} " + "| #{helper_stats["methods"].to_s.rjust(7)} " + "| #{helper_stats["code_lines"].to_s.rjust(6)} " + "|"
   puts "+------------+---------+---------+---------+--------+"
   puts "| TOTAL      | " + total_lines.to_s.rjust(7) + " |         |         |" + total_code_lines.to_s.rjust(7) + " |"
   puts "+------------+---------+---------+---------+--------+"
-
 end

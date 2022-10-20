@@ -2,6 +2,7 @@
 gem "selenium-webdriver"
 require 'selenium-webdriver'
 require 'rspec'
+require 'faker'
 
 # include utility functions such as 'page_text', 'try_for', 'fail_safe', ..., etc.
 require "#{File.dirname(__FILE__)}/agileway_utils.rb"
