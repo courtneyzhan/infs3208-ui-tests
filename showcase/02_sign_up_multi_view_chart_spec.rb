@@ -19,18 +19,17 @@ describe "Show Case " do
   end
 
   before(:each) do
-    driver.find_element(:xpath, "//a[@aria-label='menu']").click
     sleep 0.5
-    click_nav_view_all_courses
   end
 
   # !! Running in normal mode, disable 'execution delay' and 'HighLight Control'
-  it "Show Case: Login, View List, Add a Review, Edit, Delete" do
-    course_list_page = CourseListPage.new(driver)
-    try_for(2) { course_list_page.click_course("CSSE2002") }
+  it "Show Case: Mobile format: Search Course, Add a Review, Edit, Delete" do
+    driver.find_element(:xpath, "//a[@aria-label='menu']").click
+    sleep 1
+    search_course("INFS3208")
 
     course_page = CoursePage.new(driver)
-    course_page.delete_all_reviews
+    course_page.delete_all_reviews # deletes own reviews
     course_url = driver.current_url
     try_for(4) { course_page.click_add_review }
 

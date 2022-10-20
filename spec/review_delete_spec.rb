@@ -1,6 +1,6 @@
 load File.dirname(__FILE__) + "/../test_helper.rb"
 
-describe "Review" do
+describe "Review Delete" do
   include TestHelper
 
   before(:all) do

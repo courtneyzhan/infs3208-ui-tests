@@ -193,4 +193,9 @@ module TestHelper
     driver.find_element(:id, "navbar-logout").click
     sleep 0.2
   end
+  def search_course(course_search)
+    driver.find_element(:id, "courseSearch").send_keys(course_search)
+    driver.find_element(:id, "courseSearch").send_keys(:enter)
+    sleep 0.5
+  end
 end

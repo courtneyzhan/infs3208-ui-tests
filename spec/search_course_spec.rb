@@ -17,11 +17,7 @@ describe "Search course" do
   before(:each) do
   end
 
-  def search_course(course_search)
-    driver.find_element(:id, "courseSearch").send_keys(course_search)
-    driver.find_element(:id, "courseSearch").send_keys(:enter)
-    sleep 0.5
-  end
+
 
   it "Search course by code on home page" do
     # DESIGN
@@ -31,7 +27,8 @@ describe "Search course" do
 
     driver.find_element(:id, "navbar-login").click
     login("Courtney", "test01")
-
+    sleep 1
+    
     search_course("comp2048")
     sleep 1
     expect(page_text).to include("Theory of Computing")
